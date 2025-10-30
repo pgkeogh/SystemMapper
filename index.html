@@ -1,0 +1,291 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+    />
+    <title>AI Platform & Data Model Visualizer</title>
+
+    <!-- Tailwind CSS CDN (OK for dev) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome (fixed SRI) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
+    />
+
+    <!-- PapaParse -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <!-- Favicon (inline SVG to prevent 404) -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%23121622"/><path d="M14 42h18a8 8 0 0 0 0-16H22" stroke="%23A78BFA" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    />
+
+    <!-- Custom scrollbar styling -->
+    <style>
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0b0d13;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #374151;
+        border-radius: 8px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #4b5563;
+      }
+      html,
+      body {
+        background: #0b0d13;
+      }
+    </style>
+  </head>
+  <body class="text-gray-200 antialiased">
+    <!-- Top Bar -->
+    <header
+      class="sticky top-0 z-30 bg-[#0B0D13]/90 backdrop-blur border-b border-[#262A33]"
+    >
+      <div
+        class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">
+            AI Platform & Data Model Visualizer
+          </h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <select
+            id="domain-filter"
+            class="bg-[#0F1220] border border-[#262A33] rounded-md px-3 py-2 text-sm"
+          >
+            <option value="ALL">All Domains</option>
+            <option value="CRM">CRM</option>
+            <option value="ERP">ERP</option>
+          </select>
+
+          <select
+            id="vendor-select"
+            class="bg-[#0F1220] border border-[#262A33] rounded-md px-3 py-2 text-sm"
+          >
+            <option value="">No Vendor Selected</option>
+          </select>
+
+          <button
+            id="manage-data-button"
+            class="px-3 py-2 text-sm rounded-md border border-[#262A33] bg-[#101426] hover:bg-[#121833] transition"
+          >
+            <i class="fa-solid fa-database mr-2"></i>Manage Data
+          </button>
+          <button
+            id="clear-storage"
+            class="px-3 py-2 text-sm rounded-md border border-[#262A33] bg-[#101426] hover:bg-[#121833] transition"
+          >
+            <i class="fa-solid fa-broom mr-2"></i>Clear Local Storage
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main 3-Column Grid -->
+    <main id="main-app-content" class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <!-- Column: CRM -->
+        <section
+          class="bg-[#0F1220] border border-[#262A33] rounded-xl overflow-hidden"
+        >
+          <div
+            class="px-5 py-4 flex items-center justify-between border-b border-[#262A33]"
+          >
+            <h2 class="font-semibold">CRM</h2>
+            <span class="text-xs text-gray-400"
+              >Sales, Marketing, Service, Commerce</span
+            >
+          </div>
+          <div
+            id="source-systems-capabilities-container"
+            class="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-3"
+          ></div>
+        </section>
+
+        <!-- Column: ERP -->
+        <section
+          class="bg-[#0F1220] border border-[#262A33] rounded-xl overflow-hidden"
+        >
+          <div
+            class="px-5 py-4 flex items-center justify-between border-b border-[#262A33]"
+          >
+            <h2 class="font-semibold">ERP</h2>
+            <span class="text-xs text-gray-400"
+              >Finance, Supply Chain, HCM</span
+            >
+          </div>
+          <div
+            id="infrastructure-data-capabilities-container"
+            class="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-3"
+          ></div>
+        </section>
+
+        <!-- Column: AI Layer -->
+        <section
+          class="bg-[#0F1220] border border-[#262A33] rounded-xl overflow-hidden"
+        >
+          <div
+            class="px-5 py-4 flex items-center justify-between border-b border-[#262A33]"
+          >
+            <h2 class="font-semibold">AI Layer</h2>
+            <span class="text-xs text-gray-400">Coming Soon</span>
+          </div>
+          <div
+            id="ai-platform-capabilities-container"
+            class="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-3"
+          >
+            <!-- Empty for now - future capabilities will go here -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Product Catalog Modal (Layer 2) -->
+    <div id="product-selection-modal" class="fixed inset-0 z-40 hidden">
+      <div class="absolute inset-0 bg-black/60"></div>
+      <div
+        class="relative max-w-4xl mx-auto mt-16 bg-[#0F1220] border border-[#262A33] rounded-xl shadow-2xl overflow-hidden"
+      >
+        <div
+          class="px-5 py-4 flex items-center justify-between border-b border-[#262A33]"
+        >
+          <div class="flex items-center gap-3">
+            <h3 class="font-semibold" id="modal-capability-name">Capability</h3>
+            <span
+              id="modal-capability-tags"
+              class="text-xs text-gray-400"
+            ></span>
+          </div>
+          <button
+            id="close-product-modal"
+            class="text-gray-400 hover:text-gray-200"
+          >
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <div class="flex items-center gap-3">
+            <select
+              id="modal-vendor-filter"
+              class="bg-[#101426] border border-[#262A33] rounded-md px-3 py-2 text-sm"
+            >
+              <option value="">All Vendors</option>
+            </select>
+            <input
+              id="modal-search"
+              type="text"
+              placeholder="Search products…"
+              class="bg-[#101426] border border-[#262A33] rounded-md px-3 py-2 text-sm w-full"
+            />
+          </div>
+
+          <div
+            id="modal-product-list"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-auto pr-1"
+          ></div>
+        </div>
+
+        <div
+          class="px-5 py-4 border-t border-[#262A33] flex items-center justify-end gap-3"
+        >
+          <button
+            id="clear-product-selection"
+            class="px-3 py-2 text-sm rounded-md border border-[#262A33] bg-[#101426] hover:bg-[#121833] transition"
+          >
+            Clear Selection
+          </button>
+          <button
+            id="close-product-modal-button"
+            class="px-3 py-2 text-sm rounded-md border border-[#262A33] bg-[#101426] hover:bg-[#121833] transition"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Evaluation Panel (Layer 3) -->
+    <div
+      id="product-eval-panel"
+      class="fixed right-0 top-0 h-full w-full sm:w-[520px] z-50 translate-x-full transition-transform duration-300"
+    >
+      <div class="h-full bg-[#0F1220] border-l border-[#262A33] flex flex-col">
+        <div
+          class="px-5 py-4 flex items-center justify-between border-b border-[#262A33]"
+        >
+          <div class="flex items-center gap-3">
+            <div>
+              <div id="eval-product-name" class="font-semibold"></div>
+              <div id="eval-product-meta" class="text-xs text-gray-400"></div>
+            </div>
+          </div>
+          <button
+            id="close-eval-panel"
+            class="text-gray-400 hover:text-gray-200"
+          >
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div id="eval-content" class="p-5 space-y-5 overflow-auto flex-1">
+          <!-- Sections populate dynamically -->
+        </div>
+
+        <div class="px-5 py-4 border-t border-[#262A33]">
+          <button
+            id="select-this-product"
+            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-500 transition"
+          >
+            <i class="fa-solid fa-check"></i>
+            Select This Product
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Editor Modal (placeholder scaffold) -->
+    <div id="data-editor-container" class="fixed inset-0 z-40 hidden">
+      <div class="absolute inset-0 bg-black/60"></div>
+      <div
+        class="relative max-w-5xl mx-auto mt-10 bg-[#0F1220] border border-[#262A33] rounded-xl overflow-hidden"
+      >
+        <div
+          class="px-5 py-4 flex items-center justify-between border-b border-[#262A33]"
+        >
+          <h3 class="font-semibold">Data Editor</h3>
+          <button
+            id="save-close-data-editor"
+            class="px-3 py-2 text-sm rounded-md border border-[#262A33] bg-[#101426] hover:bg-[#121833] transition"
+          >
+            Save & Close
+          </button>
+        </div>
+        <div class="p-5">
+          <p class="text-sm text-gray-400">
+            Editor UI to be implemented. This modal is wired for future CRUD.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- App JS -->
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

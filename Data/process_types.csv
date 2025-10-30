@@ -1,0 +1,4 @@
+id,name,description,color,examples
+pt_core,Core Process,Fundamental operations and data management,purple,"Contact Management|Lead Management|Sales Force Automation|Marketing Automation|Customer Service Automation|Financial Management|Inventory Management"
+pt_workflow,Workflow Process,Automated business processes and orchestration,blue,"Campaign Management|Case Management|Pipeline Management|Email Marketing|Workflow Automation|Procure-to-Pay|Order-to-Cash|Hire-to-Retire"
+pt_strategic,Strategic Process,High-level strategy and analytics,gold,"Operational CRM|Analytical CRM|Strategic CRM|Financial Planning|Supply Chain Optimization|Workforce Planning"

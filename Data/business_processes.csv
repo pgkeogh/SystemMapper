@@ -1,0 +1,13 @@
+id,name,description,order,domain
+bp_sales,Sales Process,End-to-end sales lifecycle management from lead to close,1,CRM
+bp_marketing,Marketing Process,Customer acquisition and engagement through campaigns,2,CRM
+bp_service,Customer Service Process,Support and customer retention management,3,CRM
+bp_field_service,Field Service Process,On-site service delivery and maintenance,4,CRM
+bp_commerce,Commerce Process,E-commerce and order management,5,CRM
+bp_financial,Financial Management,End-to-end financial operations from GL to reporting,6,ERP
+bp_supply_chain,Supply Chain Management,Procurement inventory and logistics management,7,ERP
+bp_manufacturing,Manufacturing,Production planning and shop floor control,8,ERP
+bp_hcm,Human Capital Management,Hire-to-retire employee lifecycle management,9,ERP
+bp_project_mgmt,Project Management,Project planning execution and billing,10,ERP
+bp_inventory,Inventory Management,Stock control and fulfillment,11,ERP
+bp_procurement,Procurement,Purchase orders and vendor management,12,ERP

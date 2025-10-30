@@ -1,0 +1,66 @@
+id,name,businessProcessId,description,valueProposition,processTypes,color,order,tags
+cap_contact_mgmt,Contact Management,bp_sales,Centralized database for customer information,Maintain comprehensive customer profiles and interaction history,core,blue,1,crm
+cap_lead_mgmt,Lead Management,bp_sales,Track leads from initial contact through conversion,Centralize lead tracking and improve conversion rates by 20-30%,"core,workflow,strategic",blue,2,crm
+cap_opportunity_mgmt,Opportunity Management,bp_sales,Manage sales opportunities through pipeline,Increase win rates and forecast accuracy with real-time visibility,"core,workflow",blue,3,crm
+cap_sales_force_auto,Sales Force Automation,bp_sales,Track interactions and manage sales pipelines,Automate repetitive sales tasks and improve productivity by 20-30%,"core,workflow,strategic",blue,4,crm
+cap_sales_forecasting,Sales Forecasting,bp_sales,Predict future sales and revenue,Improve forecast accuracy and quota management,"workflow,strategic",blue,5,crm
+cap_workflow_automation,Workflow Automation,bp_sales,Automate repetitive tasks and approvals,Reduce manual work and improve process efficiency,"workflow,strategic",blue,6,"crm,erp"
+cap_pipeline_mgmt,Pipeline Management,bp_sales,Real-time visibility into sales pipeline,Track deals through stages and identify bottlenecks,workflow,blue,7,crm
+cap_marketing_auto,Marketing Automation,bp_marketing,Automate marketing tasks and workflows,Streamline campaign execution and lead nurturing,"core,workflow,strategic",green,1,crm
+cap_campaign_mgmt,Campaign Management,bp_marketing,Design and execute multi-channel campaigns,Improve campaign ROI and customer engagement,"workflow,strategic",green,2,crm
+cap_email_marketing,Email Marketing,bp_marketing,Create and track email campaigns,Increase email engagement and conversion rates,workflow,green,3,crm
+cap_lead_nurturing,Lead Nurturing,bp_marketing,Automated lead development workflows,Move leads through funnel with personalized content,workflow,green,4,crm
+cap_segmentation,Customer Segmentation,bp_marketing,Target specific customer groups,Improve campaign relevance and conversion rates,strategic,green,5,"crm,erp"
+cap_journey_orchestration,Customer Journey Orchestration,bp_marketing,Map and automate customer journeys,Create personalized multi-touch experiences,"workflow,strategic",green,6,crm
+cap_customer_service_auto,Customer Service Automation,bp_service,Ticket management and case routing,Improve response times and customer satisfaction,"core,workflow,strategic",orange,1,crm
+cap_case_mgmt,Case Management,bp_service,Track and resolve customer issues,Manage cases from initiation to resolution with SLA tracking,"workflow,strategic",orange,2,crm
+cap_knowledge_base,Knowledge Base,bp_service,Centralized knowledge repository,Enable self-service and improve agent efficiency,core,orange,3,"crm,erp"
+cap_omnichannel,Omnichannel Engagement,bp_service,Unified customer interactions across channels,Provide seamless experience across phone email chat social,workflow,orange,4,crm
+cap_self_service,Self-Service Portals,bp_service,Customer self-help capabilities,Reduce support costs and improve customer satisfaction,workflow,orange,5,crm
+cap_field_service_mgmt,Field Service Management,bp_field_service,Manage on-site service delivery,Optimize technician scheduling and resource allocation,"core,workflow",purple,1,"crm,erp"
+cap_work_order_mgmt,Work Order Management,bp_field_service,Create and track service tasks,Streamline service request to completion process,workflow,purple,2,erp
+cap_scheduling_dispatch,Scheduling and Dispatching,bp_field_service,Intelligent resource scheduling,Optimize technician routes and reduce travel time,"workflow,strategic",purple,3,erp
+cap_mobile_field_service,Mobile Field Service,bp_field_service,Mobile access for field technicians,Enable real-time updates and offline capabilities,workflow,purple,4,erp
+cap_iot_integration,IoT Integration,bp_field_service,Connect IoT devices for proactive service,Enable predictive maintenance and remote monitoring,strategic,purple,5,erp
+cap_commerce_mgmt,Commerce Management,bp_commerce,Manage e-commerce operations,Enable B2B and B2C online sales,"core,workflow",teal,1,"crm,erp"
+cap_order_mgmt,Order Management,bp_commerce,End-to-end order processing,Track orders from placement to fulfillment,workflow,teal,2,"crm,erp"
+cap_cpq,Configure Price Quote,bp_commerce,Complex product configuration and pricing,Automate quote generation for complex products,"workflow,strategic",teal,3,"crm,erp"
+cap_personalization,Personalization,bp_commerce,AI-driven personalized experiences,Increase conversion with tailored recommendations,strategic,teal,4,"crm,erp"
+cap_data_analysis,Data Analysis and Reporting,bp_sales,Track KPIs and generate insights,Make data-driven decisions with real-time analytics,strategic,blue,8,"crm,erp"
+cap_general_ledger,General Ledger,bp_financial,Central accounting system for all financial transactions,Maintain accurate financial records and enable real-time reporting,"core,workflow",gold,1,erp
+cap_accounts_payable,Accounts Payable,bp_financial,Manage vendor invoices and payments,Automate invoice processing and payment workflows,"core,workflow",gold,2,erp
+cap_accounts_receivable,Accounts Receivable,bp_financial,Manage customer invoices and collections,Improve cash flow and reduce DSO,"core,workflow",gold,3,erp
+cap_financial_reporting,Financial Reporting,bp_financial,Generate financial statements and reports,Enable compliance and data-driven decision making,strategic,gold,4,erp
+cap_budgeting,Budgeting and Forecasting,bp_financial,Create and track budgets,Improve financial planning and variance analysis,"workflow,strategic",gold,5,erp
+cap_cash_mgmt,Cash and Treasury Management,bp_financial,Manage cash flow and treasury operations,Optimize liquidity and financial risk management,"core,workflow",gold,6,erp
+cap_asset_mgmt,Fixed Asset Management,bp_financial,Track and depreciate fixed assets,Maintain accurate asset records and compliance,"core,workflow",gold,7,erp
+cap_revenue_mgmt,Revenue Management,bp_financial,Automate revenue recognition,Ensure compliance with ASC 606 and IFRS 15,"workflow,strategic",gold,8,erp
+cap_tax_mgmt,Tax Management,bp_financial,Manage tax calculations and compliance,Automate tax reporting and ensure regulatory compliance,"workflow,strategic",gold,9,erp
+cap_inventory_tracking,Inventory Tracking,bp_inventory,Real-time stock level monitoring,Optimize inventory levels and reduce carrying costs,"core,workflow",brown,1,erp
+cap_warehouse_mgmt,Warehouse Management,bp_inventory,Manage warehouse operations,Improve picking packing and shipping efficiency,workflow,brown,2,erp
+cap_cycle_counting,Cycle Counting,bp_inventory,Automated inventory counting,Maintain accurate inventory records without full shutdowns,workflow,brown,3,erp
+cap_multi_location,Multi-Location Management,bp_inventory,Manage inventory across multiple sites,Optimize stock distribution and transfers,"workflow,strategic",brown,4,erp
+cap_demand_planning,Demand Planning,bp_supply_chain,Forecast future inventory requirements,Reduce stockouts and overstock situations,strategic,slate,1,erp
+cap_procurement_auto,Procurement Automation,bp_procurement,Automate purchase order workflows,Streamline vendor management and reduce costs,"workflow,strategic",indigo,1,erp
+cap_supplier_mgmt,Supplier Management,bp_procurement,Manage vendor relationships and performance,Improve supplier quality and reduce risk,"core,strategic",indigo,2,erp
+cap_purchase_orders,Purchase Order Management,bp_procurement,Create and track purchase orders,Streamline procurement approval workflows,"core,workflow",indigo,3,erp
+cap_contract_mgmt,Contract Management,bp_procurement,Manage supplier contracts and agreements,Ensure compliance and optimize contract terms,"workflow,strategic",indigo,4,erp
+cap_logistics_mgmt,Logistics Management,bp_supply_chain,Manage transportation and shipping,Optimize freight costs and delivery times,"workflow,strategic",slate,2,erp
+cap_supply_chain_planning,Supply Chain Planning,bp_supply_chain,Plan and optimize supply chain operations,Improve supply chain efficiency and responsiveness,strategic,slate,3,erp
+cap_production_planning,Production Planning,bp_manufacturing,Schedule and optimize production,Maximize throughput and minimize downtime,"workflow,strategic",gray,1,erp
+cap_quality_mgmt,Quality Management,bp_manufacturing,Control product quality,Ensure compliance and reduce defects,"workflow,strategic",gray,2,erp
+cap_shop_floor_control,Shop Floor Control,bp_manufacturing,Monitor and control production operations,Real-time visibility into manufacturing processes,workflow,gray,3,erp
+cap_maintenance_mgmt,Maintenance Management,bp_manufacturing,Manage equipment maintenance,Reduce downtime through preventive maintenance,"workflow,strategic",gray,4,erp
+cap_bom_mgmt,Bill of Materials Management,bp_manufacturing,Manage product structures and components,Ensure accurate production and costing,"core,workflow",gray,5,erp
+cap_talent_acquisition,Talent Acquisition,bp_hcm,Recruit and onboard employees,Reduce time-to-hire and improve candidate quality,"core,workflow",teal,1,erp
+cap_payroll,Payroll Processing,bp_hcm,Process employee compensation,Ensure accurate and compliant payroll,"core,workflow",teal,2,erp
+cap_performance_mgmt,Performance Management,bp_hcm,Track employee performance,Improve talent development and retention,"workflow,strategic",teal,3,erp
+cap_learning_mgmt,Learning Management,bp_hcm,Manage employee training and development,Improve skills and ensure compliance training,workflow,teal,4,erp
+cap_workforce_planning,Workforce Planning,bp_hcm,Plan organizational structure and headcount,Optimize workforce allocation and costs,strategic,teal,5,erp
+cap_benefits_admin,Benefits Administration,bp_hcm,Manage employee benefits programs,Streamline enrollment and compliance,"core,workflow",teal,6,erp
+cap_time_tracking,Time and Attendance,bp_hcm,Track employee time and attendance,Ensure accurate payroll and labor cost tracking,"core,workflow",teal,7,erp
+cap_project_planning,Project Planning,bp_project_mgmt,Define project scope and resources,Improve project success rates,workflow,violet,1,erp
+cap_project_accounting,Project Accounting,bp_project_mgmt,Track project costs and revenue,Improve project profitability,strategic,violet,2,erp
+cap_resource_mgmt,Resource Management,bp_project_mgmt,Allocate and optimize project resources,Maximize resource utilization and minimize conflicts,"workflow,strategic",violet,3,erp
+cap_project_billing,Project Billing,bp_project_mgmt,Invoice customers for project work,Automate billing and revenue recognition,"workflow,strategic",violet,4,erp
+cap_project_collaboration,Project Collaboration,bp_project_mgmt,Enable team collaboration on projects,Improve communication and document management,workflow,violet,5,erp
