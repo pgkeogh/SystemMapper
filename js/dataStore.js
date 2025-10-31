@@ -501,8 +501,147 @@ export const state = {
       confidence: "high",
     },
   ],
+  businessProcessEvaluations: [],
 };
 
 export function ensureBootstrapData() {
   console.log("✅ Bootstrap data loaded");
+}
+
+// ============================================================================
+// NEW HELPER FUNCTIONS FOR BUSINESS PROCESS-CENTRIC UI
+// ============================================================================
+
+/**
+ * Get all products that support a business process (via its capabilities)
+ * @param {string} businessProcessId - The business process ID
+ * @returns {Array} Array of product objects
+ */
+
+export function getProductsForBusinessProcess(businessProcessId) {
+  // Get all capabilities for this business process
+  const processCaps = state.capabilities.filter(
+    (c) => c.businessProcessId === businessProcessId
+  );
+  const capIds = processCaps.map((c) => c.id);
+
+  // Find all products that support at least one of these capabilities
+  return state.products.filter(
+    (p) =>
+      p.capabilityIds && p.capabilityIds.some((capId) => capIds.includes(capId))
+  );
+}
+
+/**
+ * Get the best product per vendor for a business process
+ * Prioritizes: suite > module, then by number of capabilities supported
+ * @param {string} businessProcessId - The business process ID
+ * @returns {Array} Array of best product per vendor
+ */
+export function getBestProductPerVendorForProcess(businessProcessId) {
+  const products = getProductsForBusinessProcess(businessProcessId);
+
+  if (products.length === 0) return [];
+
+  // Group products by vendor
+  const vendorMap = new Map();
+  products.forEach((p) => {
+    if (!vendorMap.has(p.vendorId)) {
+      vendorMap.set(p.vendorId, []);
+    }
+    vendorMap.get(p.vendorId).push(p);
+  });
+
+  // Pick best product per vendor
+  const bestPerVendor = [];
+  vendorMap.forEach((prods, vendorId) => {
+    // Prefer suite over module
+    const suite = prods.find((p) => p.productType === "suite");
+    if (suite) {
+      bestPerVendor.push(suite);
+      return;
+    }
+
+    // Otherwise, pick product with most capabilities
+    const sorted = prods.sort((a, b) => {
+      const aCount = (a.capabilityIds || []).length;
+      const bCount = (b.capabilityIds || []).length;
+      return bCount - aCount;
+    });
+
+    bestPerVendor.push(sorted[0]);
+  });
+
+  return bestPerVendor;
+}
+
+/**
+ * Get capabilities supported by a product within a specific business process
+ * @param {string} productId - The product ID
+ * @param {string} businessProcessId - The business process ID
+ * @returns {Array} Array of capability objects
+ */
+export function getCapabilitiesForProductInProcess(
+  productId,
+  businessProcessId
+) {
+  const product = state.products.find((p) => p.id === productId);
+  if (!product || !product.capabilityIds) return [];
+
+  return state.capabilities.filter(
+    (c) =>
+      c.businessProcessId === businessProcessId &&
+      product.capabilityIds.includes(c.id)
+  );
+}
+
+/**
+ * Get all vendors that have products for a business process
+ * @param {string} businessProcessId - The business process ID
+ * @returns {Array} Array of vendor objects
+ */
+export function getVendorsForBusinessProcess(businessProcessId) {
+  const products = getProductsForBusinessProcess(businessProcessId);
+  const vendorIds = [...new Set(products.map((p) => p.vendorId))];
+
+  return state.vendors.filter((v) => vendorIds.includes(v.id));
+}
+
+/**
+ * Get all products from a specific vendor for a business process
+ * @param {string} vendorId - The vendor ID
+ * @param {string} businessProcessId - The business process ID
+ * @returns {Array} Array of product objects
+ */
+export function getVendorProductsForProcess(vendorId, businessProcessId) {
+  const allProducts = getProductsForBusinessProcess(businessProcessId);
+  return allProducts.filter((p) => p.vendorId === vendorId);
+}
+
+/**
+ * Get count of capabilities a product supports within a business process
+ * @param {string} productId - The product ID
+ * @param {string} businessProcessId - The business process ID
+ * @returns {number} Count of capabilities
+ */
+export function getCapabilityCountForProductInProcess(
+  productId,
+  businessProcessId
+) {
+  return getCapabilitiesForProductInProcess(productId, businessProcessId)
+    .length;
+}
+/**
+ * Get business process evaluation for a vendor and business process
+ * @param {string} vendorId - The vendor ID
+ * @param {string} businessProcessId - The business process ID
+ * @returns {Object|null} Business process evaluation object or null
+ */
+export function getBusinessProcessEvaluation(vendorId, businessProcessId) {
+  return (
+    state.businessProcessEvaluations.find(
+      (bpe) =>
+        bpe.vendorId === vendorId && bpe.businessProcessId === businessProcessId
+    ) || null
+  );
 }

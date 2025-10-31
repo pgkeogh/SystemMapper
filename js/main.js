@@ -1,5 +1,14 @@
 // js/main.js
-import { state, ensureBootstrapData } from "./dataStore.js";
+import {
+  state,
+  ensureBootstrapData,
+  getProductsForBusinessProcess,
+  getBestProductPerVendorForProcess,
+  getCapabilitiesForProductInProcess,
+  getCapabilityCountForProductInProcess,
+  getVendorProductsForProcess,
+  getVendorsForBusinessProcess,
+} from "./dataStore.js";
 import {
   renderAllColumns,
   renderVendorSelector,
@@ -9,7 +18,10 @@ import {
   openProductCatalogForCapability,
   closeProductCatalog,
   closeEvalPanel,
+  openBusinessProcessDetail,
+  closeBusinessProcessModal,
   initModals,
+  showFullEvaluation,
 } from "./modals.js";
 import { loadAllCSVsIfPresent } from "./csvHandler.js";
 import { initializeDataEditorListeners } from "./dataEditor.js";
@@ -74,11 +86,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   initModals();
 
-  // Expose helpers globally
+  // Wire up business process modal close buttons
+  document
+    .getElementById("close-bp-modal")
+    ?.addEventListener("click", closeBusinessProcessModal);
+  document
+    .getElementById("close-bp-modal-button")
+    ?.addEventListener("click", closeBusinessProcessModal);
+  document
+    .getElementById("bp-modal-backdrop")
+    ?.addEventListener("click", closeBusinessProcessModal);
+
+  // Expose helpers globally (keep these for onclick handlers in HTML)
   window.openProductCatalogForCapability = openProductCatalogForCapability;
   window.closeProductCatalog = closeProductCatalog;
   window.closeEvalPanel = closeEvalPanel;
-  window.ui.state = state;
+  window.openBusinessProcessDetail = openBusinessProcessDetail;
+  window.closeBusinessProcessModal = closeBusinessProcessModal;
+  window.showFullEvaluation = showFullEvaluation;
+
+  // Namespace everything else under window.ui
+  window.ui = {
+    state,
+    helpers: {
+      getProductsForBusinessProcess,
+      getBestProductPerVendorForProcess,
+      getCapabilitiesForProductInProcess,
+      getCapabilityCountForProductInProcess,
+      getVendorProductsForProcess,
+      getVendorsForBusinessProcess,
+    },
+  };
+
+  console.log("💡 Access data via: window.ui.state");
+  console.log(
+    "💡 Access helpers via: window.ui.helpers.getProductsForBusinessProcess(...)"
+  );
 
   initializeDataEditorListeners();
 

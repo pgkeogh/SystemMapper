@@ -15,14 +15,24 @@ export async function loadAllCSVsIfPresent() {
 
   try {
     // Load all CSV files in parallel
-    const [businessProcesses, capabilities, vendors, products, evaluations] =
-      await Promise.all([
-        loadCSV("/data/business_processes.csv", parseBusinessProcesses),
-        loadCSV("/data/capabilities.csv", parseCapabilities),
-        loadCSV("/data/vendors.csv", parseVendors),
-        loadCSV("/data/platform_products.csv", parseProducts),
-        loadCSV("/data/product_evaluations.csv", parseEvaluations),
-      ]);
+    const [
+      businessProcesses,
+      capabilities,
+      vendors,
+      products,
+      evaluations,
+      businessProcessEvaluations,
+    ] = await Promise.all([
+      loadCSV("/data/business_processes.csv", parseBusinessProcesses),
+      loadCSV("/data/capabilities.csv", parseCapabilities),
+      loadCSV("/data/vendors.csv", parseVendors),
+      loadCSV("/data/platform_products.csv", parseProducts),
+      loadCSV("/data/product_evaluations.csv", parseEvaluations),
+      loadCSV(
+        "/data/business_process_evaluations.csv",
+        parseBusinessProcessEvaluations
+      ),
+    ]);
 
     // Merge into state
     if (businessProcesses) state.businessProcesses = businessProcesses;
@@ -30,6 +40,8 @@ export async function loadAllCSVsIfPresent() {
     if (vendors) state.vendors = vendors;
     if (products) state.products = products;
     if (evaluations) state.productEvaluations = evaluations;
+    if (businessProcessEvaluations)
+      state.businessProcessEvaluations = businessProcessEvaluations;
 
     console.log("✅ CSV data loaded successfully:", {
       businessProcesses: state.businessProcesses.length,
@@ -37,6 +49,7 @@ export async function loadAllCSVsIfPresent() {
       vendors: state.vendors.length,
       products: state.products.length,
       evaluations: state.productEvaluations.length,
+      businessProcessEvaluations: state.businessProcessEvaluations.length,
     });
   } catch (err) {
     console.error("❌ CSV load failed, using bootstrap data", err);
@@ -162,6 +175,38 @@ function parseEvaluations(rows) {
         : [],
       implementationComplexity: r.implementationComplexity?.trim() || "",
       typicalImplementationTime: r.typicalImplementationTime?.trim() || "",
+      confidence: r.confidence?.trim() || "",
+    }))
+    .filter((r) => r.id);
+}
+function parseBusinessProcessEvaluations(rows) {
+  return rows
+    .map((r) => ({
+      id: r.id?.trim(),
+      vendorId: r.vendorId?.trim(),
+      businessProcessId: r.businessProcessId?.trim(),
+      overallFit: r.overallFit?.trim() || "",
+      keyProducts: r.keyProducts?.trim()
+        ? r.keyProducts.split("|").map((s) => s.trim())
+        : [],
+      goodFor: r.goodFor?.trim()
+        ? r.goodFor.split("|").map((s) => s.trim())
+        : [],
+      notIdealFor: r.notIdealFor?.trim()
+        ? r.notIdealFor.split("|").map((s) => s.trim())
+        : [],
+      bestUseCases: r.bestUseCases?.trim()
+        ? r.bestUseCases.split("|").map((s) => s.trim())
+        : [],
+      strengths: r.strengths?.trim()
+        ? r.strengths.split("|").map((s) => s.trim())
+        : [],
+      weaknesses: r.weaknesses?.trim()
+        ? r.weaknesses.split("|").map((s) => s.trim())
+        : [],
+      implementationComplexity: r.implementationComplexity?.trim() || "",
+      typicalImplementationTime: r.typicalImplementationTime?.trim() || "",
+      totalCostOfOwnership: r.totalCostOfOwnership?.trim() || "",
       confidence: r.confidence?.trim() || "",
     }))
     .filter((r) => r.id);

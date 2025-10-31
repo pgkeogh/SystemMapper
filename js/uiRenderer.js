@@ -1,5 +1,13 @@
-// js/uiRenderer.js
-import { state } from "./dataStore.js";
+import {
+  state,
+  getBestProductPerVendorForProcess,
+  getCapabilityCountForProductInProcess,
+} from "./dataStore.js";
+
+export function applyDomainFilter() {
+  // Domain filtering logic applied during render
+  console.log("Domain filter applied:", state.activeDomain);
+}
 
 export function renderVendorSelector() {
   const select = document.getElementById("vendor-select");
@@ -17,13 +25,8 @@ export function renderVendorSelector() {
   console.log("✅ Vendor selector rendered:", state.vendors.length, "vendors");
 }
 
-export function applyDomainFilter() {
-  // Domain filtering logic applied during render
-  console.log("Domain filter applied:", state.activeDomain);
-}
-
 export function renderAllColumns() {
-  console.log("🎨 Rendering all columns...");
+  console.log("🎨 Rendering all columns (Business Process view)...");
 
   const columns = {
     crm: document.getElementById("source-systems-capabilities-container"),
@@ -33,45 +36,20 @@ export function renderAllColumns() {
 
   Object.values(columns).forEach((el) => el && (el.innerHTML = ""));
 
-  // Filter capabilities by active domain
-  const caps = state.capabilities.filter((c) => {
-    if (state.activeDomain === "ALL") return true;
-    const bp = state.businessProcesses.find(
-      (b) => b.id === c.businessProcessId
-    );
-    return (
-      bp?.domain === state.activeDomain ||
-      c.tags?.toUpperCase()?.includes(state.activeDomain)
-    );
-  });
+  // Filter business processes by active domain
+  let processes = state.businessProcesses;
+  if (state.activeDomain !== "ALL") {
+    processes = processes.filter((bp) => bp.domain === state.activeDomain);
+  }
 
-  console.log("Filtered capabilities:", caps.length);
+  // Split by domain
+  const crmProcesses = processes.filter((bp) => bp.domain === "CRM");
+  const erpProcesses = processes.filter((bp) => bp.domain === "ERP");
 
-  // NEW COLUMN DISTRIBUTION LOGIC
+  renderBusinessProcessGrid(columns.crm, crmProcesses);
+  renderBusinessProcessGrid(columns.erp, erpProcesses);
 
-  // Column 1: CRM - CRM capabilities AND cross-domain capabilities
-  const crmCaps = caps.filter((c) => {
-    const bp = state.businessProcesses.find(
-      (b) => b.id === c.businessProcessId
-    );
-    return bp?.domain === "CRM" || c.tags?.includes("crm");
-  });
-
-  // Column 2: ERP - ERP capabilities AND cross-domain capabilities
-  const erpCaps = caps.filter((c) => {
-    const bp = state.businessProcesses.find(
-      (b) => b.id === c.businessProcessId
-    );
-    return bp?.domain === "ERP" || c.tags?.includes("erp");
-  });
-
-  // Column 3: AI Layer - Empty for now (future use)
-  const aiCaps = [];
-
-  renderCapabilityGrid(columns.crm, crmCaps);
-  renderCapabilityGrid(columns.erp, erpCaps);
-
-  // Render empty state for AI column
+  // AI Layer empty state
   if (columns.ai) {
     columns.ai.innerHTML = `
       <div class="col-span-2 text-center py-12 text-gray-500 text-sm">
@@ -82,10 +60,80 @@ export function renderAllColumns() {
   }
 
   console.log("✅ Columns rendered:", {
-    crm: crmCaps.length,
-    erp: erpCaps.length,
-    ai: aiCaps.length,
+    crm: crmProcesses.length,
+    erp: erpProcesses.length,
   });
+}
+
+function renderBusinessProcessGrid(container, processes) {
+  if (!container) return;
+
+  if (processes.length === 0) {
+    container.innerHTML = `
+      <div class="col-span-2 text-center py-12 text-gray-500 text-sm">
+        <i class="fa-solid fa-filter text-3xl mb-3 opacity-30"></i>
+        <p>No business processes for this domain</p>
+      </div>
+    `;
+    return;
+  }
+
+  processes.forEach((bp) => {
+    const card = document.createElement("div");
+    card.className = [
+      "bg-[#0B0F1E] border border-[#262A33] rounded-lg p-4",
+      "transition hover:shadow-lg hover:shadow-black/30",
+    ].join(" ");
+
+    // Get best products per vendor for this process
+    const bestProducts = getBestProductPerVendorForProcess(bp.id);
+
+    card.innerHTML = `
+      <div class="mb-3">
+        <h3 class="font-semibold text-base">${bp.name}</h3>
+        <p class="text-xs text-gray-400 mt-1">${bp.description}</p>
+      </div>
+      
+      <div class="space-y-2">
+        ${
+          bestProducts.length > 0
+            ? renderVendorBadges(bestProducts, bp.id)
+            : '<span class="text-xs text-gray-500">No products available</span>'
+        }
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function renderVendorBadges(products, businessProcessId) {
+  return products
+    .map((product) => {
+      const vendor = state.vendors.find((v) => v.id === product.vendorId);
+      const capCount = getCapabilityCountForProductInProcess(
+        product.id,
+        businessProcessId
+      );
+
+      return `
+      <button 
+        onclick="window.openBusinessProcessDetail('${
+          product.id
+        }', '${businessProcessId}')"
+        class="w-full flex items-center justify-between px-3 py-2 rounded-md border border-[#2B3140] bg-[#111628] hover:bg-[#1a1f35] transition text-left"
+      >
+        <div class="flex-1">
+          <div class="text-sm font-medium">${vendor?.name || "Unknown"}</div>
+          <div class="text-xs text-gray-400">${product.name}</div>
+        </div>
+        <div class="text-xs text-gray-500">${capCount} cap${
+        capCount !== 1 ? "s" : ""
+      }</div>
+      </button>
+    `;
+    })
+    .join("");
 }
 
 function renderCapabilityGrid(container, capabilities) {

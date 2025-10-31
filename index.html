@@ -48,6 +48,13 @@
       body {
         background: #0b0d13;
       }
+      #business-process-modal {
+        transition: opacity 0.2s ease-in-out;
+      }
+      #business-process-modal.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body class="text-gray-200 antialiased">
@@ -255,6 +262,52 @@
           >
             <i class="fa-solid fa-check"></i>
             Select This Product
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Business Process Detail Modal -->
+    <div id="business-process-modal" class="fixed inset-0 z-40 hidden">
+      <div class="absolute inset-0 bg-black/60" id="bp-modal-backdrop"></div>
+      <div
+        class="relative max-w-4xl mx-auto mt-16 bg-[#0F1220] border border-[#262A33] rounded-xl shadow-2xl overflow-hidden"
+      >
+        <div
+          class="px-5 py-4 flex items-center justify-between border-b border-[#262A33]"
+        >
+          <div>
+            <h3 class="font-semibold text-lg" id="bp-modal-title">
+              Business Process
+            </h3>
+            <div class="text-xs text-gray-400 mt-1">
+              <span id="bp-modal-vendor"></span> •
+              <span id="bp-modal-product"></span>
+            </div>
+          </div>
+          <button
+            id="close-bp-modal"
+            class="text-gray-400 hover:text-gray-200 transition"
+          >
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div
+          id="bp-modal-content"
+          class="p-5 space-y-5 max-h-[70vh] overflow-auto"
+        >
+          <!-- Content populated dynamically -->
+        </div>
+
+        <div
+          class="px-5 py-4 border-t border-[#262A33] flex items-center justify-end gap-3"
+        >
+          <button
+            id="close-bp-modal-button"
+            class="px-3 py-2 text-sm rounded-md border border-[#262A33] bg-[#101426] hover:bg-[#121833] transition"
+          >
+            Close
           </button>
         </div>
       </div>

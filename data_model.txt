@@ -1,0 +1,313 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           CORE ENTITIES                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────┐
+│   BUSINESS_PROCESSES     │
+├──────────────────────────┤
+│ • id (PK)                │
+│ • name                   │
+│ • description            │
+│ • order                  │
+│ • domain (CRM|ERP)       │
+└──────────┬───────────────┘
+           │
+           │ 1:N
+           │
+           ▼
+┌──────────────────────────┐
+│     CAPABILITIES         │
+├──────────────────────────┤
+│ • id (PK)                │
+│ • name                   │
+│ • businessProcessId (FK) │◄────┐
+│ • description            │     │
+│ • valueProposition       │     │
+│ • processTypes           │     │
+│ • color                  │     │
+│ • order                  │     │
+│ • tags (crm|erp|crm,erp) │     │
+└──────────┬───────────────┘     │
+           │                     │
+           │ N:M                 │
+           │                     │
+           ▼                     │
+┌──────────────────────────┐     │
+│   PLATFORM_PRODUCTS      │     │
+├──────────────────────────┤     │
+│ • id (PK)                │     │
+│ • name                   │     │
+│ • vendorId (FK)          │─────┼─────┐
+│ • description            │     │     │
+│ • productType            │     │     │
+│   (suite|module)         │     │     │
+│ • capabilityIds (FK[])   │─────┘     │
+│ • features               │           │
+│ • pricingTier            │           │
+│ • marketPosition         │           │
+│ • performanceMetrics     │           │
+│ • deploymentModels       │           │
+│ • integrations           │           │
+│ • domains (crm|erp)      │           │
+└──────────┬───────────────┘           │
+           │                           │
+           │ N:1                       │
+           │                           │
+           ▼                           │
+┌──────────────────────────┐           │
+│        VENDORS           │           │
+├──────────────────────────┤           │
+│ • id (PK)                │◄──────────┘
+│ • name                   │
+│ • brandColor             │
+│ • marketPosition         │
+│ • bestFor                │
+│ • website                │
+│ • targetCompanySize      │
+│ • overallStrengths       │
+│ • overallWeaknesses      │
+│ • domains (crm|erp)      │
+└──────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        EVALUATION ENTITIES                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────┐
+│   PRODUCT_EVALUATIONS (Current)      │
+├──────────────────────────────────────┤
+│ • id (PK)                            │
+│ • productId (FK)                     │───┐
+│ • capabilityId (FK)                  │   │
+│ • goodFor[]                          │   │
+│ • notIdealFor[]                      │   │
+│ • bestUseCases[]                     │   │
+│ • specialFeatures[]                  │   │
+│ • competitiveAdvantages[]            │   │
+│ • competitiveDisadvantages[]         │   │
+│ • implementationComplexity           │   │
+│ • typicalImplementationTime          │   │
+│ • confidence                         │   │
+└──────────────────────────────────────┘   │
+                                           │
+                                           │
+┌──────────────────────────────────────┐   │
+│ BUSINESS_PROCESS_EVALUATIONS (Future)│   │
+├──────────────────────────────────────┤   │
+│ • id (PK)                            │   │
+│ • vendorId (FK)                      │───┤
+│ • businessProcessId (FK)             │   │
+│ • overallFit (excellent|good|fair)   │   │
+│ • keyProducts[] (FK[])               │◄──┘
+│ • goodFor[]                          │
+│ • notIdealFor[]                      │
+│ • bestUseCases[]                     │
+│ • strengths[]                        │
+│ • weaknesses[]                       │
+│ • implementationComplexity           │
+│ • typicalImplementationTime          │
+│ • totalCostOfOwnership               │
+│ • confidence                         │
+└──────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      DERIVED RELATIONSHIPS                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+BUSINESS_PROCESS ──1:N──> CAPABILITIES ──N:M──> PRODUCTS ──N:1──> VENDORS
+
+Derived Query Patterns:
+├─ getProductsForBusinessProcess(businessProcessId)
+│  └─> Find all capabilities for process → Find all products supporting those capabilities
+│
+├─ getBestProductPerVendorForProcess(businessProcessId)
+│  └─> Group products by vendor → Select best (suite > module, or most capabilities)
+│
+├─ getCapabilitiesForProductInProcess(productId, businessProcessId)
+│  └─> Filter capabilities by process AND product support
+│
+└─ getVendorsForBusinessProcess(businessProcessId)
+   └─> Get all products for process → Extract unique vendors
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         DATA FLOW DIAGRAM                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+USER INTERACTION FLOW:
+
+1. UI Renders Business Processes (grouped by CRM/ERP)
+   │
+   ├─> For each BUSINESS_PROCESS:
+   │   │
+   │   ├─> Query: getProductsForBusinessProcess(bp.id)
+   │   │   └─> Returns: All products supporting this process
+   │   │
+   │   ├─> Query: getBestProductPerVendorForProcess(bp.id)
+   │   │   └─> Returns: Best product per vendor for this process
+   │   │
+   │   └─> Render: Vendor badges (clickable)
+   │
+   └─> User clicks vendor badge
+       │
+       └─> Opens: Business Process Detail Modal
+           │
+           ├─> Shows: Vendor name, primary product
+           │
+           ├─> Query: Get all vendor products for this process
+           │   └─> Display: Related products/modules
+           │
+           ├─> Query: getCapabilitiesForProductInProcess(productId, bpId)
+           │   └─> Display: Capabilities supported
+           │
+           └─> Future: Display business process evaluation
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      EXAMPLE DATA INSTANCES                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+BUSINESS_PROCESS:
+┌────────────┬──────────────┬────────┬────────┐
+│ id         │ name         │ domain │ order  │
+├────────────┼──────────────┼────────┼────────┤
+│ bp_sales   │ Sales Process│ CRM    │ 1      │
+│ bp_financial│ Financial Mgmt│ ERP   │ 6      │
+└────────────┴──────────────┴────────┴────────┘
+           │                    │
+           │ 1:N                │ 1:N
+           ▼                    ▼
+CAPABILITIES:
+┌─────────────────┬──────────────────┬─────────────────┬──────────┐
+│ id              │ name             │ businessProcessId│ tags     │
+├─────────────────┼──────────────────┼─────────────────┼──────────┤
+│ cap_lead_mgmt   │ Lead Management  │ bp_sales        │ crm      │
+│ cap_opp_mgmt    │ Opportunity Mgmt │ bp_sales        │ crm      │
+│ cap_order_mgmt  │ Order Management │ bp_commerce     │ crm,erp  │◄─ Cross-domain
+│ cap_general_ledger│ General Ledger │ bp_financial    │ erp      │
+└─────────────────┴──────────────────┴─────────────────┴──────────┘
+           │                    │                    │
+           │ N:M                │ N:M                │ N:M
+           ▼                    ▼                    ▼
+PRODUCTS:
+┌────────────────────┬──────────────┬──────────────┬─────────────────────────┐
+│ id                 │ name         │ vendorId     │ capabilityIds           │
+├────────────────────┼──────────────┼──────────────┼─────────────────────────┤
+│ prod_sf_sales_cloud│ Sales Cloud  │ vendor_sf    │ [cap_lead_mgmt,         │
+│                    │              │              │  cap_opp_mgmt,          │
+│                    │              │              │  cap_contact_mgmt]      │
+├────────────────────┼──────────────┼──────────────┼─────────────────────────┤
+│ prod_d365_finance  │ D365 Finance │ vendor_ms    │ [cap_general_ledger,    │
+│                    │              │              │  cap_accounts_payable]  │
+├────────────────────┼──────────────┼──────────────┼─────────────────────────┤
+│ prod_netsuite_order│ NS Order Mgmt│ vendor_ns    │ [cap_order_mgmt]        │◄─ Cross-domain
+└────────────────────┴──────────────┴──────────────┴─────────────────────────┘
+           │                    │                    │
+           │ N:1                │ N:1                │ N:1
+           ▼                    ▼                    ▼
+VENDORS:
+┌──────────────┬────────────┬─────────┐
+│ id           │ name       │ domains │
+├──────────────┼────────────┼─────────┤
+│ vendor_sf    │ Salesforce │ crm     │
+│ vendor_ms    │ Microsoft  │ crm,erp │
+│ vendor_ns    │ NetSuite   │ erp     │
+└──────────────┴────────────┴─────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    QUERY EXAMPLES WITH RESULTS                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Query: getProductsForBusinessProcess('bp_sales')
+├─ Step 1: Get capabilities for bp_sales
+│  └─> [cap_lead_mgmt, cap_opp_mgmt, cap_contact_mgmt, ...]
+├─ Step 2: Find products supporting ANY of these capabilities
+│  └─> [prod_sf_sales_cloud, prod_d365_sales, prod_hubspot_sales, ...]
+└─ Result: Array of products
+
+Query: getBestProductPerVendorForProcess('bp_sales')
+├─ Step 1: Get all products for bp_sales (from above)
+├─ Step 2: Group by vendorId
+│  ├─> vendor_sf: [prod_sf_sales_cloud, prod_sf_service_cloud]
+│  ├─> vendor_ms: [prod_d365_sales]
+│  └─> vendor_hubspot: [prod_hubspot_sales]
+├─ Step 3: Pick best per vendor (suite > module, or most capabilities)
+│  ├─> vendor_sf: prod_sf_sales_cloud (5 capabilities)
+│  ├─> vendor_ms: prod_d365_sales (4 capabilities)
+│  └─> vendor_hubspot: prod_hubspot_sales (3 capabilities)
+└─ Result: [prod_sf_sales_cloud, prod_d365_sales, prod_hubspot_sales]
+
+Query: getCapabilitiesForProductInProcess('prod_sf_sales_cloud', 'bp_sales')
+├─ Step 1: Get product's capabilityIds
+│  └─> [cap_lead_mgmt, cap_opp_mgmt, cap_contact_mgmt, cap_sales_force_auto]
+├─ Step 2: Filter by businessProcessId === 'bp_sales'
+│  └─> [cap_lead_mgmt, cap_opp_mgmt, cap_contact_mgmt, cap_sales_force_auto]
+└─ Result: Array of capabilities
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      CROSS-DOMAIN HANDLING                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Cross-Domain Capabilities (tags: 'crm,erp'):
+├─ cap_order_mgmt (Order Management)
+├─ cap_workflow_automation (Workflow Automation)
+├─ cap_field_service_mgmt (Field Service Management)
+└─ cap_commerce_mgmt (Commerce Management)
+
+These appear in BOTH columns:
+┌─────────────────────┬─────────────────────┐
+│ CRM Column          │ ERP Column          │
+├─────────────────────┼─────────────────────┤
+│ Sales Process       │ Supply Chain Mgmt   │
+│ ├─ Salesforce       │ ├─ Oracle SCM       │
+│ ├─ Microsoft        │ ├─ SAP S/4HANA      │
+│ └─ HubSpot          │ └─ NetSuite         │
+│                     │                     │
+│ Commerce Process    │ Inventory Mgmt      │
+│ ├─ Salesforce       │ ├─ Oracle           │
+│ ├─ SAP              │ ├─ NetSuite         │
+│ └─ NetSuite ◄───────┼─────► NetSuite     │ ◄─ Cross-domain product
+└─────────────────────┴─────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    FUTURE: BUSINESS PROCESS EVALUATIONS                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+BUSINESS_PROCESS_EVALUATION Example:
+┌────────────────────────────────────────────────────────────────────────────┐
+│ id: eval_sf_sales_process                                                  │
+│ vendorId: vendor_salesforce                                                │
+│ businessProcessId: bp_sales                                                │
+│ overallFit: excellent                                                      │
+│ keyProducts: [prod_sf_sales_cloud, prod_sf_service_cloud]                 │
+│ goodFor:                                                                   │
+│   - Enterprise sales teams with complex cycles                            │
+│   - Organizations needing deep customization                              │
+│   - Multi-channel sales operations                                        │
+│ notIdealFor:                                                               │
+│   - Small businesses with limited budgets                                 │
+│   - Simple transactional sales                                            │
+│ bestUseCases:                                                              │
+│   - B2B enterprise sales with 6-18 month cycles                           │
+│   - Account-based selling with multiple stakeholders                      │
+│ strengths:                                                                 │
+│   - Most comprehensive sales platform                                     │
+│   - Strongest ecosystem and integrations                                  │
+│   - Best-in-class analytics and AI                                        │
+│ weaknesses:                                                                │
+│   - Highest total cost of ownership                                       │
+│   - Requires dedicated admin resources                                    │
+│   - Steep learning curve                                                  │
+│ implementationComplexity: high                                             │
+│ typicalImplementationTime: 6-12 months                                     │
+│ totalCostOfOwnership: $$$$                                                 │
+│ confidence: high                                                           │
+└────────────────────────────────────────────────────────────────────────────┘
+
+This evaluation would be displayed in the Business Process Detail Modal
+when viewing Salesforce's solution for the Sales Process.

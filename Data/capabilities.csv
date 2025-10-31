@@ -64,3 +64,7 @@ cap_project_accounting,Project Accounting,bp_project_mgmt,Track project costs an
 cap_resource_mgmt,Resource Management,bp_project_mgmt,Allocate and optimize project resources,Maximize resource utilization and minimize conflicts,"workflow,strategic",violet,3,erp
 cap_project_billing,Project Billing,bp_project_mgmt,Invoice customers for project work,Automate billing and revenue recognition,"workflow,strategic",violet,4,erp
 cap_project_collaboration,Project Collaboration,bp_project_mgmt,Enable team collaboration on projects,Improve communication and document management,workflow,violet,5,erp
+cap_inventory_mgmt,Inventory Management,bp_fieldservice,Track parts tools and inventory for field service,Ensure technicians have right materials and reduce delays,workflow,green,4,"crm,erp"
+cap_preventive_maintenance,Preventive Maintenance,bp_fieldservice,Scheduled maintenance to prevent asset failures,Reduce downtime and extend asset life,workflow,green,5,"crm,erp"
+cap_knowledge_mgmt,Knowledge Management,bp_service,Centralized knowledge base for agents and customers,Improve first-call resolution and enable self-service,support,teal,6,crm
+cap_mobile_workforce,Mobile Workforce Management,bp_fieldservice,Mobile apps and tools for field technicians,Enable real-time updates and field productivity,core,green,3,"crm,erp"
